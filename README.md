@@ -33,7 +33,7 @@ Currently, we are able to input the torrent file in the TorrentFileHandlerTester
 * Multiple peers are used to get the file and make sure download goes through. It is not multi-threaded though.
 
 Bibliography
-> -Research Links Used
+>-Research Links Used
   * http://www.research.rutgers.edu/~atjang/teaching/cs352/project.html 
   * http://bnrg.cs.berkeley.edu/~adj/cs16x/
   * http://www.kristenwidman.com/blog/how-to-write-a-bittorrent-client-part-1/
