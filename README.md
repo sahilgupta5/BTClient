@@ -33,18 +33,10 @@ Currently, we are able to input the torrent file in the TorrentFileHandlerTester
 * Multiple peers are used to get the file and make sure download goes through. It is not multi-threaded though.
 
 Bibliography
-Research Links Used:
-1. http://www.research.rutgers.edu/~atjang/teaching/cs352/project.html
-2. http://bnrg.cs.berkeley.edu/~adj/cs16x/
-3. http://www.kristenwidman.com/blog/how-to-write-a-bittorrent-client-part-1/
-4. To test Bencode files: http://tools.rosinstrument.com/cgi-bin/pte.pl
-5. Example Bit-torrent Implementations:
+Research Links Used
+1. http://www.research.rutgers.edu/~atjang/teaching/cs352/project.html 2. http://bnrg.cs.berkeley.edu/~adj/cs16x/ 3. http://www.kristenwidman.com/blog/how-to-write-a-bittorrent-client-part-1/ 4. To test Bencode files: http://tools.rosinstrument.com/cgi-bin/pte.pl 5. Example Bit-torrent Implementations
 * http://sourceforge.net/projects/bittorrent/
 * https://github.com/rakshasa/libtorrent
-* https://github.com/rakshasa/rtorrent
-6. Specification: https://wiki.theory.org/index.php/BitTorrentSpecification
-7. RFC: http://jonas.nitro.dk/bittorrent/bittorrent-rfc.html
-8. The BitTorrent Protocol Specification: http://www.bittorrent.org/beps/bep_0003.html
-9. Stack Overflow Links: 
+* https://github.com/rakshasa/rtorrent 6. Specification: https://wiki.theory.org/index.php/BitTorrentSpecification 7. RFC: http://jonas.nitro.dk/bittorrent/bittorrent-rfc.html 8. The BitTorrent Protocol Specification: http://www.bittorrent.org/beps/bep_0003.html 9. Stack Overflow Links 
 * http://stackoverflow.com/questions/990677/implementing-bittorrent-protocol
 * https://tools.ietf.org/html/rfc5694
