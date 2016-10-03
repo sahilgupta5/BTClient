@@ -34,6 +34,9 @@ public class TorrentFileHandlerTester {
 
 	private TorrentFile torrent_file;
 
+	private static String torrentFilePath;
+	private static String torrentOutputFileName;
+
 	/*
 	 * Added Variable Below for getting the peers
 	 */
@@ -49,7 +52,7 @@ public class TorrentFileHandlerTester {
 	Socket peerSocket;
 	Socket peerSuccessfulSocket;// when the handshake has been successful only
 								// then
-	
+
 	int socketTimeout;
 	// use this
 	int NumberOfPiecesToDownload;
@@ -91,46 +94,6 @@ public class TorrentFileHandlerTester {
 		testTorrentFileHandler();
 	}
 
-	/*
-	 * Precondition: None Postcondition: If "Kinkakuji - Main Temple
-	 * 3.JPG.torrent" exists in the current directory, it unencodes the data and
-	 * extracts the fields necessary for the first project.
-	 */
-	private void testTorrentFileHandler() {
-		torrent_file_handler = new TorrentFileHandler();
-		torrent_file = torrent_file_handler
-				.openTorrentFile("/Users/sahilgupta/Google Drive/Project 2/JAVA Implementation/Sahil/BTClient/src/com/bittorrentclient/testfiles/dsl-4.4.10.iso.torrent");
-
-		if (torrent_file != null) {
-			NumberOfPiecesToDownload = torrent_file.piece_hash_values_as_url
-					.size();
-			completedPieces = new boolean[NumberOfPiecesToDownload];
-			piecesList = new ArrayList<ArrayList<byte[]>>(
-					NumberOfPiecesToDownload);
-			for (int i = 0; i < completedPieces.length; i++) {
-				completedPieces[i] = false;
-			}
-			System.out.println("Tracker URL: " + torrent_file.tracker_url);
-			System.out
-					.println("File Size (Bytes): " + torrent_file.file_length);
-			System.out.println("Piece Size (Bytes): "
-					+ torrent_file.piece_length);
-			System.out.println("SHA-1 Info Hash: "
-					+ torrent_file.info_hash_as_url);
-			for (int i = 0; i < torrent_file.piece_hash_values_as_hex.size(); i++) {
-				System.out.println("SHA-1 Hash for Piece ["
-						+ i
-						+ "]: "
-						+ (String) torrent_file.piece_hash_values_as_url
-								.elementAt(i));
-			}
-		} else {
-			System.err
-					.println("Error: There was a problem when unencoding the file \"dsl-4.4.10.iso.torrent\".");
-			System.err.println("\t\tPerhaps it does not exist.");
-		}
-	}
-
 	/**
 	 * Generates a new TorrentFileHandlerTester object to demonstrate how to use
 	 * a TorrentFileHandler object.
@@ -140,6 +103,18 @@ public class TorrentFileHandlerTester {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
+		if (args.length != 2) {
+			System.out.println(
+					"Torrent input file and torrent output file name not specified. Args are:");
+			for (String arg : args) {
+				System.out.println(arg);
+			}
+			System.exit(1);
+		}
+
+		torrentFilePath = new String(args[0]);
+		torrentOutputFileName = new String(args[1]);
+
 		TorrentFileHandlerTester tfht = new TorrentFileHandlerTester();
 		System.out.println(tfht.torrent_file.tracker_url);
 
@@ -153,6 +128,40 @@ public class TorrentFileHandlerTester {
 		}
 	}
 
+	private void testTorrentFileHandler() {
+		torrent_file_handler = new TorrentFileHandler();
+		torrent_file = torrent_file_handler
+				.openTorrentFile(TorrentFileHandlerTester.torrentFilePath);
+
+		if (torrent_file != null) {
+			NumberOfPiecesToDownload = torrent_file.piece_hash_values_as_url
+					.size();
+			completedPieces = new boolean[NumberOfPiecesToDownload];
+			piecesList = new ArrayList<ArrayList<byte[]>>(
+					NumberOfPiecesToDownload);
+			for (int i = 0; i < completedPieces.length; i++) {
+				completedPieces[i] = false;
+			}
+			System.out.println("Tracker URL: " + torrent_file.tracker_url);
+			System.out
+					.println("File Size (Bytes): " + torrent_file.file_length);
+			System.out.println(
+					"Piece Size (Bytes): " + torrent_file.piece_length);
+			System.out.println(
+					"SHA-1 Info Hash: " + torrent_file.info_hash_as_url);
+			for (int i = 0; i < torrent_file.piece_hash_values_as_hex
+					.size(); i++) {
+				System.out.println("SHA-1 Hash for Piece [" + i + "]: "
+						+ (String) torrent_file.piece_hash_values_as_url
+								.elementAt(i));
+			}
+		} else {
+			System.err.println(
+					"Error: There was a problem when unencoding the file \"dsl-4.4.10.iso.torrent\".");
+			System.err.println("\t\tPerhaps it does not exist.");
+		}
+	}
+
 	@SuppressWarnings("rawtypes")
 	public void sendGet(String announce, String infoHashUrl, String peer_id,
 			Integer port, Long uploadedBytes, Long downloadedBytes,
@@ -160,10 +169,10 @@ public class TorrentFileHandlerTester {
 
 		// Create the URL for the get request
 		String peerIDEncoding = ToolKit.makeHTTPEscaped(peer_id);
-		String query = String
-				.format("info_hash=%s&peer_id=%s&port=%s&uploaded=%s&downloaded=%s&left=%s&event=%s",
-						infoHashUrl, peerIDEncoding, port, uploadedBytes,
-						downloadedBytes, leftBytes, event);
+		String query = String.format(
+				"info_hash=%s&peer_id=%s&port=%s&uploaded=%s&downloaded=%s&left=%s&event=%s",
+				infoHashUrl, peerIDEncoding, port, uploadedBytes,
+				downloadedBytes, leftBytes, event);
 		URL trackerUrl = new URL(announce + "?" + query);
 
 		// contact the tracker url
@@ -178,8 +187,8 @@ public class TorrentFileHandlerTester {
 			}
 			// get the peer list along with port number to contact
 			Map trackerResponse = (Map) Bencoder2.decode(responseInBytes);
-			peerList = new ArrayList<String>(Arrays.asList(Utilities
-					.decodeCompressedPeers(trackerResponse)));
+			peerList = new ArrayList<String>(Arrays
+					.asList(Utilities.decodeCompressedPeers(trackerResponse)));
 			HashSet<String> hs = new HashSet<String>();
 			hs.addAll(peerList);
 			peerList.clear();
@@ -201,15 +210,15 @@ public class TorrentFileHandlerTester {
 		// if file has been downloaded before reaching all the peers
 		// then exit before hand
 		boolean stop = false;
-		while(!stop){
+		while (!stop) {
 			for (String peer : peerList) {
 				peerHandshake(peer);
 			}
-			
-			for(int i = 0; i < completedPieces.length; i++){
-				if(!completedPieces[i])
+
+			for (int i = 0; i < completedPieces.length; i++) {
+				if (!completedPieces[i])
 					socketTimeout = socketTimeout + 1000;
-				else{
+				else {
 					System.out.println("File downloaded");
 					stop = true;
 					break;
@@ -314,12 +323,17 @@ public class TorrentFileHandlerTester {
 	public static final byte CHOKE = 0;// choke: <len=0001><id=0>
 	public static final byte UNCHOKE = 1;// unchoke: <len=0001><id=1>
 	public static final byte INTERESTED = 2;// interested: <len=0001><id=2>
-	public static final byte UNINTERESTED = 3;// not interested: <len=0001><id=3>
+	public static final byte UNINTERESTED = 3;// not interested:
+												// <len=0001><id=3>
 	public static final byte HAVE = 4;// have: <len=0005><id=4><piece index>
-	public static final byte BITFIELD = 5;// bitfield: <len=0001+X><id=5><bitfield>
-	public static final byte REQUEST = 6;// request: <len=0013><id=6><index><begin><length>
-	public static final byte PIECE = 7;// piece: <len=0009+X><id=7><index><begin><block>
-	public static final byte CANCEL = 8;// cancel: <len=0013><id=8><index><begin><length>
+	public static final byte BITFIELD = 5;// bitfield:
+											// <len=0001+X><id=5><bitfield>
+	public static final byte REQUEST = 6;// request:
+											// <len=0013><id=6><index><begin><length>
+	public static final byte PIECE = 7;// piece:
+										// <len=0009+X><id=7><index><begin><block>
+	public static final byte CANCEL = 8;// cancel:
+										// <len=0013><id=8><index><begin><length>
 
 	public void goUntilUnChoked() {
 		boolean stop = false;
@@ -410,8 +424,8 @@ public class TorrentFileHandlerTester {
 						switch (messageId) {
 						case CHOKE: // choke: <len=0001><id=0>
 							if (prefixLength != 1) {
-								throw new ProtocolException("pl "
-										+ prefixLength);
+								throw new ProtocolException(
+										"pl " + prefixLength);
 							}
 							System.out.println("choked!");
 							// Move on to next peer
@@ -429,8 +443,8 @@ public class TorrentFileHandlerTester {
 								throw new ProtocolException();
 							}
 							int pieceIndex = is.readInt();
-							System.out.println("have!, piece index:"
-									+ pieceIndex);
+							System.out.println(
+									"have!, piece index:" + pieceIndex);
 
 							break;
 						case PIECE: // piece:
@@ -447,7 +461,8 @@ public class TorrentFileHandlerTester {
 							is.readFully(block);
 
 							piecesList.get(index).add(block);
-							downloadedPieceBytes = downloadedPieceBytes + prefixLength - 9;
+							downloadedPieceBytes = downloadedPieceBytes
+									+ prefixLength - 9;
 							begin = begin + prefixLength - 9;
 							System.out.println("piece received, index: "
 									+ thisIndex + " begin: " + thisBegin);
@@ -455,8 +470,8 @@ public class TorrentFileHandlerTester {
 							break;
 						case CANCEL: // cancel:
 										// <len=0013><id<=8><index><begin><length>
-							System.out.println("cancel prefix length is "
-									+ prefixLength);
+							System.out.println(
+									"cancel prefix length is " + prefixLength);
 
 							if (prefixLength != 13) {
 								throw new ProtocolException();
@@ -495,7 +510,7 @@ public class TorrentFileHandlerTester {
 		try {
 			// convert array of bytes into file
 			FileOutputStream fileOuputStream = new FileOutputStream(
-					"/Users/sahilgupta/Google Drive/Project 2/JAVA Implementation/Sahil/BTClient/src/com/bittorrentclient/testfiles/dsl-4.4.10.iso");
+					TorrentFileHandlerTester.torrentOutputFileName);
 
 			for (int i = 0; i < piecesList.size(); i++) {
 				ArrayList<byte[]> myList = piecesList.get(i);
